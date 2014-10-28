@@ -1,0 +1,8 @@
+/pom.xml
+/ext
+/build
+/bin
+/*.sh
+.classpath
+.project
+jabber.iml
