@@ -44,6 +44,7 @@ import org.jivesoftware.smack.tcp.XMPPTCPConnection;
 import org.jivesoftware.smack.XMPPConnection;
 
 import org.jivesoftware.smackx.muc.MultiUserChat;
+import org.jivesoftware.smackx.xhtmlim.XHTMLManager;
 
 import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.SSLContext;
@@ -181,20 +182,27 @@ public class Jabber implements IManager {
 	 * @param message
 	 */
 	public void setRoom(RepositoryModel repository, Message message) {
-		boolean useProjectChannels = runtimeManager.getSettings().getBoolean(Plugin.SETTING_USE_PROJECT_ROOMS, false);
-		if (!useProjectChannels) {
+		boolean useProjectRooms = runtimeManager.getSettings().getBoolean(Plugin.SETTING_USE_PROJECT_ROOMS, false);
+		if (!useProjectRooms) {
 			return;
 		}
 
-		if (StringUtils.isEmpty(repository.projectPath)) {
+		log.info("Configured to use project rooms. Project name is " + repository.name);
+
+		if (StringUtils.isEmpty(repository.name)) {
 			return;
 		}
 
 		String defaultRoom = runtimeManager.getSettings().getString(Plugin.SETTING_DEFAULT_ROOM, null);
-		if (!StringUtils.isEmpty(defaultRoom)) {
-			message.setRoom(defaultRoom + "-" + repository.projectPath);
+		String roomKey = String.format(Plugin.SETTING_PROJECT_ROOM, repository.name).replaceAll(".git$", "");
+		String projectRoom = runtimeManager.getSettings().getString(roomKey, null);
+
+		log.info("Found projectRoom " + projectRoom + " via key " + roomKey);
+
+		if (!StringUtils.isEmpty(projectRoom)) {
+			message.setRoom(projectRoom);
 		} else {
-			message.setRoom(repository.projectPath);
+			message.setRoom(defaultRoom);
 		}
 	}
 
@@ -225,9 +233,20 @@ public class Jabber implements IManager {
 				chats.put(room, chat);
 			}
 
-			log.info("Send message [" + message.getMessage() + " to room [" + room + "]");
+			if (message.getHtml() == null) {
+				log.info("Send text message [" + message.getMessage() + " to room [" + room + "]");
+	 			chat.sendMessage(message.getMessage());
+			} else {
+				org.jivesoftware.smack.packet.Message msg = chat.createMessage();
 
-	 		chat.sendMessage(message.getMessage());
+				msg.setBody(message.getMessage());
+
+				XHTMLManager.addBody(msg, message.getHtml());
+
+				log.info("Sending XML [" + msg.toXML().toString() + "]");
+
+				chat.sendMessage(msg);
+			}
 		} catch (SmackException | XMPPException e) {
 			log.error("Failed to send message to jabber server", e);
 		}

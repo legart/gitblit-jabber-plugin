@@ -28,6 +28,8 @@ public class Plugin extends GitblitPlugin {
 
     public static final String SETTING_USE_PROJECT_ROOMS = "jabber.useProjectRooms";
 
+	public static final String SETTING_PROJECT_ROOM = "jabber.projectRoom.%s";
+
 	public static final String SETTING_POST_PERSONAL_REPOS = "jabber.postPersonalRepos";
 
 	public static final String SETTING_POST_TICKETS = "jabber.postTickets";

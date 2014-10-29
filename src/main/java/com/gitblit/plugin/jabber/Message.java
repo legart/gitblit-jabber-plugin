@@ -18,18 +18,32 @@ package com.gitblit.plugin.jabber;
 public class Message {
 
 	private String message;
+	private String html;
 
 	private transient String room;
 
 	Message() {
 	}
 
+	public static Message create(String message, String html) {
+		return new Message(message, html);
+	}
+
 	public static Message text(String message) {
         return new Message(message);
     }
 
+	public static Message html(String html) {
+		return new Message(html);
+	}
+
 	public Message(String message) {
 		this.message = message;
+	}
+
+	public Message(String message, String html) {
+		this.message = message;
+		this.html = html;
 	}
 
 	public Message message(String message) {
@@ -46,8 +60,16 @@ public class Message {
 		return message;
 	}
 
+	public String getHtml() {
+		return html;
+	}
+
 	public void setMessage(String message) {
 		this.message = message;
+	}
+
+	public void setHtml(String html) {
+		this.html = html;
 	}
 
 	public String getRoom() {

@@ -22,6 +22,9 @@ import org.kohsuke.args4j.Option;
 
 import ro.fortsoft.pf4j.Extension;
 
+import org.jivesoftware.smackx.xhtmlim.XHTMLManager;
+import org.jivesoftware.smackx.xhtmlim.XHTMLText;
+
 import com.gitblit.manager.IRuntimeManager;
 import com.gitblit.servlet.GitblitContext;
 import com.gitblit.transport.ssh.commands.CommandMetaData;
@@ -58,7 +61,20 @@ public class JabberDispatcher extends DispatchCommand {
 		 */
 		@Override
 		public void run() throws Failure {
-		    Message message = Message.text("Test message sent from Gitblit");
+
+			// Create an XHTMLText to send with the message
+			XHTMLText xhtmlText = new XHTMLText(null, null);
+			xhtmlText.appendOpenParagraphTag("font-size:large");
+			xhtmlText.append("Test message sent from Gitblit ");
+			xhtmlText.appendOpenSpanTag("color:green");
+			xhtmlText.append("in HTML");
+			xhtmlText.appendCloseSpanTag();
+			xhtmlText.appendOpenEmTag();
+			xhtmlText.append("!");
+			xhtmlText.appendCloseEmTag();
+			xhtmlText.appendCloseParagraphTag();
+
+		    Message message = Message.create("Test message sent from Gitblit", xhtmlText.toString());
 		    if (!StringUtils.isEmpty(room)) {
 		    	message.room(room);
 		    }
