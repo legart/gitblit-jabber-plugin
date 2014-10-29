@@ -1,6 +1,6 @@
 ## Gitblit Jabber plugin
 
-*REQUIRES 1.5.0*
+*REQUIRES 1.6.0*
 
 The Gitblit Jabber plugin provides integration with Jabber/XMPP servers.
 
