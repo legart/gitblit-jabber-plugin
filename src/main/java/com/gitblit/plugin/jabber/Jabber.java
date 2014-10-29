@@ -15,51 +15,33 @@
  */
 package com.gitblit.plugin.jabber;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.Serializable;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.Map;
-import java.util.TreeMap;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import com.gitblit.Constants;
 import com.gitblit.manager.IManager;
 import com.gitblit.manager.IRuntimeManager;
 import com.gitblit.models.RepositoryModel;
 import com.gitblit.utils.StringUtils;
-
-import org.jivesoftware.smack.MessageListener;
-import org.jivesoftware.smack.ChatManager;
-import org.jivesoftware.smack.Chat;
-import org.jivesoftware.smack.XMPPException;
-import org.jivesoftware.smack.SmackException;
 import org.jivesoftware.smack.ConnectionConfiguration;
-import org.jivesoftware.smack.tcp.XMPPTCPConnection;
+import org.jivesoftware.smack.SmackException;
 import org.jivesoftware.smack.XMPPConnection;
-
+import org.jivesoftware.smack.XMPPException;
+import org.jivesoftware.smack.tcp.XMPPTCPConnection;
 import org.jivesoftware.smackx.muc.MultiUserChat;
 import org.jivesoftware.smackx.xhtmlim.XHTMLManager;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import javax.net.ssl.HostnameVerifier;
-import javax.net.ssl.SSLContext;
-import javax.net.ssl.SSLPeerUnverifiedException;
-import javax.net.ssl.SSLSession;
-import javax.net.ssl.SSLSocketFactory;
-import javax.net.ssl.TrustManager;
-import javax.net.ssl.X509TrustManager;
+import javax.net.ssl.*;
+import java.io.IOException;
+import java.io.Serializable;
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
-import java.security.Principal;
 import java.security.SecureRandom;
-import java.security.cert.Certificate;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
+import java.util.Map;
+import java.util.TreeMap;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class Jabber implements IManager {
 
@@ -133,7 +115,7 @@ public class Jabber implements IManager {
 
 			log.info("Connected to Jabber: " + conn.getUser());
 
-			chats = new TreeMap<String, MultiUserChat>();
+			chats = new TreeMap<>();
 
 			String room = runtimeManager.getSettings().getString(Plugin.SETTING_DEFAULT_ROOM, null);
 			String nickname = runtimeManager.getSettings().getString(Plugin.SETTING_NICKNAME, username);
@@ -172,10 +154,7 @@ public class Jabber implements IManager {
 	 */
 	public boolean shallPost(RepositoryModel repository) {
 		boolean postPersonalRepos = runtimeManager.getSettings().getBoolean(Plugin.SETTING_POST_PERSONAL_REPOS, false);
-		if (repository.isPersonalRepository() && !postPersonalRepos) {
-			return false;
-		}
-		return true;
+		return !(repository.isPersonalRepository() && !postPersonalRepos);
 	}
 
 	/**

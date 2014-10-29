@@ -44,8 +44,6 @@ import com.gitblit.utils.StringUtils;
 @Extension
 public class JabberReceiveHook extends ReceiveHook {
 
-	final String name = getClass().getSimpleName();
-
 	final Logger log = LoggerFactory.getLogger(getClass());
 
 	final Jabber jabber;
@@ -75,7 +73,7 @@ public class JabberReceiveHook extends ReceiveHook {
     	IRuntimeManager runtimeManager = GitblitContext.getManager(IRuntimeManager.class);
 		try {
 			for (ReceiveCommand cmd : commands) {
-				RefType rType = null;
+				RefType rType;
 				if (cmd.getRefName().startsWith(Constants.R_TAGS)) {
 					rType = RefType.TAG;
 			    	boolean shallPostTag = runtimeManager.getSettings().getBoolean(Plugin.SETTING_POST_TAGS, true);
@@ -120,8 +118,7 @@ public class JabberReceiveHook extends ReceiveHook {
 	 * @return true if the ref changes should be posted
 	 */
 	protected boolean shallPost(GitblitReceivePack receivePack, Collection<ReceiveCommand> commands) {
-		boolean shallPostRepo = jabber.shallPost(receivePack.getRepositoryModel());
-		return shallPostRepo;
+		return jabber.shallPost(receivePack.getRepositoryModel());
 	}
 
 	/**
@@ -204,19 +201,6 @@ public class JabberReceiveHook extends ReceiveHook {
 			html.append("<br/><ol>");
 			for (int i = 0; i < Math.min(maxCommits, commits.size()); i++) {
 				RevCommit commit = commits.get(i);
-				String username = "";
-				String email = "";
-				if (commit.getAuthorIdent().getEmailAddress() != null) {
-					username = commit.getAuthorIdent().getName();
-					email = commit.getAuthorIdent().getEmailAddress().toLowerCase();
-					if (StringUtils.isEmpty(username)) {
-						username = email;
-					}
-				} else {
-					username = commit.getAuthorIdent().getName();
-					email = username.toLowerCase();
-				}
-				String gravatarUrl = ActivityUtils.getGravatarThumbnailUrl(email, 16);
 				String commitUrl = getUrl(repo.name, null, commit.getName());
 				String shortId = commit.getName().substring(0, shortIdLen);
 				String shortMessage = StringUtils.escapeForHtml(StringUtils.trimString(commit.getShortMessage(), Constants.LEN_SHORTLOG), false);
@@ -314,7 +298,7 @@ public class JabberReceiveHook extends ReceiveHook {
     }
 
     private List<RevCommit> getCommits(GitblitReceivePack receivePack, String baseId, String tipId) {
-    	List<RevCommit> list = new ArrayList<RevCommit>();
+    	List<RevCommit> list = new ArrayList<>();
 		RevWalk walk = receivePack.getRevWalk();
 		walk.reset();
 		walk.sort(RevSort.TOPO);
