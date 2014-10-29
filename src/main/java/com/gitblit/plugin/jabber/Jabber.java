@@ -225,7 +225,7 @@ public class Jabber implements IManager {
 			MultiUserChat chat = chats.get(room);
 			if (chat == null) {
 				String username = runtimeManager.getSettings().getString(Plugin.SETTING_USERNAME, null);
-				String nickname = runtimeManager.getSettings().getString(Plugin.SETTING_DEFAULT_ROOM, username);
+				String nickname = runtimeManager.getSettings().getString(Plugin.SETTING_NICKNAME, username);
 
 				chat = new MultiUserChat(conn, room);
 				chat.createOrJoin(nickname);
