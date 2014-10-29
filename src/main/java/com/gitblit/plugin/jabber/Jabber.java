@@ -73,6 +73,8 @@ public class Jabber implements IManager {
 
 	private Map<String, MultiUserChat> chats;
 
+	final ExecutorService taskPool;
+
 	public static void init(IRuntimeManager manager) {
 		if (instance == null) {
 			instance = new Jabber(manager);
@@ -85,6 +87,7 @@ public class Jabber implements IManager {
 
 	Jabber(IRuntimeManager runtimeManager) {
 		this.runtimeManager = runtimeManager;
+		this.taskPool = Executors.newCachedThreadPool();
 	}
 
 	@Override
@@ -149,7 +152,7 @@ public class Jabber implements IManager {
 
 	@Override
 	public Jabber stop() {
-
+        this.taskPool.shutdown();
 		try {
 			if (conn != null) {
 				conn.disconnect();
@@ -206,7 +209,17 @@ public class Jabber implements IManager {
 		}
 	}
 
-	/**
+    /**
+     * Asynchronously send a message.
+     *
+     * @param message
+     * @throws IOException
+     */
+    public void sendAsync(final Message message) {
+        taskPool.submit(new JabberTask(this, message));
+    }
+
+    /**
 	 * Send a message.
 	 *
 	 * @param message
@@ -252,5 +265,30 @@ public class Jabber implements IManager {
 		}
 
 	}
+
+    private static class JabberTask implements Serializable, Callable<Boolean> {
+
+        private static final long serialVersionUID = 1L;
+
+        final Logger log = LoggerFactory.getLogger(getClass());
+        final Jabber jabber;
+        final Message message;
+
+        public JabberTask(Jabber slacker, Message message) {
+            this.jabber = slacker;
+            this.message = message;
+        }
+
+        @Override
+        public Boolean call() {
+            try {
+                jabber.send(message);
+                return true;
+            } catch (IOException e) {
+                log.error("Failed to send asynchronously to Jabber!", e);
+            }
+            return false;
+        }
+    }
 
 }

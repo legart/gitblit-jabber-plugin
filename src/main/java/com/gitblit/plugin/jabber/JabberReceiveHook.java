@@ -56,7 +56,6 @@ public class JabberReceiveHook extends ReceiveHook {
 
 	public JabberReceiveHook() {
 		super();
-
 		IRuntimeManager runtimeManager = GitblitContext.getManager(IRuntimeManager.class);
 		Jabber.init(runtimeManager);
     	jabber = Jabber.instance();
@@ -144,7 +143,7 @@ public class JabberReceiveHook extends ReceiveHook {
 
     	Message message = Message.text(msg);
 		jabber.setRoom(receivePack.getRepositoryModel(), message);
-    	jabber.send(message);
+		jabber.sendAsync(message);
     }
 
 	/**
@@ -255,7 +254,7 @@ public class JabberReceiveHook extends ReceiveHook {
 
 		Message message = Message.create(sb.toString(), html.toString());
 		jabber.setRoom(receivePack.getRepositoryModel(), message);
-    	jabber.send(message);
+		jabber.sendAsync(message);
 	}
 
 	/**
@@ -276,7 +275,7 @@ public class JabberReceiveHook extends ReceiveHook {
 
     	Message message = Message.text(msg);
 		jabber.setRoom(receivePack.getRepositoryModel(), message);
-    	jabber.send(message);
+		jabber.sendAsync(message);
 	}
 
     /**
