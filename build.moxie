@@ -93,7 +93,7 @@ repositories: 'central', 'com.gitblit'
 
 # Convenience properties for dependencies
 properties: {
-    gitblit.version : 1.6.1
+    gitblit.version : 1.6.0
     smack.version : 4.0.5
  }
 
