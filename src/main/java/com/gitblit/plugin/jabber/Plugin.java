@@ -40,6 +40,10 @@ public class Plugin extends GitblitPlugin {
 
 	public static final String SETTING_DOMAIN = "jabber.domain";
 
+	public static final String SETTING_HOST = "jabber.host";
+
+	public static final String SETTING_PORT = "jabber.port";
+
 	public static final String SETTING_ACCEPT_ALL_CERTS = "jabber.acceptAllCerts";
 
 	public static final String SETTING_POST_TAGS = "jabber.postTags";
