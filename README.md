@@ -50,6 +50,14 @@ text link to the existing plain text would make the output too chatty.
 If you have a Phabricator setup which you use for code review, you can enable this 
 option to place a small link beside each commit ID to a Phabricator revision.
 
+#### jabber.linkToPhabricator
+
+If you have a Phabricator setup which you use for code review, you can enable this 
+option to place a small link beside each commit ID to a Phabricator revision.
+Be aware that these links can only be seen by users that can receive XHTML-formatted
+Jabber messages, since adding an additional text link to the existing plain text 
+would make the output too chatty.
+
 ### Usage
 
 #### Receive Hook
