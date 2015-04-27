@@ -47,6 +47,7 @@ public class JabberReceiveHook extends ReceiveHook {
 	final Logger log = LoggerFactory.getLogger(getClass());
 
 	final Jabber jabber;
+	final IRuntimeManager runtimeManager;
 
 	enum RefType {
 		BRANCH, TAG
@@ -54,7 +55,7 @@ public class JabberReceiveHook extends ReceiveHook {
 
 	public JabberReceiveHook() {
 		super();
-		IRuntimeManager runtimeManager = GitblitContext.getManager(IRuntimeManager.class);
+		runtimeManager = GitblitContext.getManager(IRuntimeManager.class);
 		Jabber.init(runtimeManager);
     	jabber = Jabber.instance();
 	}
@@ -202,14 +203,21 @@ public class JabberReceiveHook extends ReceiveHook {
 			for (int i = 0; i < Math.min(maxCommits, commits.size()); i++) {
 				RevCommit commit = commits.get(i);
 				String commitUrl = getUrl(repo.name, null, commit.getName());
+				String phabricatorUrl = getPhabricatorUrl(StringUtils.stripDotGit(repo.name), commit.getName());
 				String shortId = commit.getName().substring(0, shortIdLen);
 				String shortMessage = StringUtils.escapeForHtml(StringUtils.trimString(commit.getShortMessage(), Constants.LEN_SHORTLOG), false);
 				String row = String.format("%s %s %s\n",
 						commitUrl, shortId, shortMessage);
 				sb.append(row);
 
-				String htmlRow = String.format("<li><a href=\"%s\">%s</a> %s</li>\n",
-					StringUtils.escapeForHtml(commitUrl, false), shortId, shortMessage);
+				String htmlRow;
+				if (phabricatorUrl == null) {
+					htmlRow = String.format("<li><a href=\"%s\">%s</a> %s</li>",
+							StringUtils.escapeForHtml(commitUrl, false), shortId, shortMessage);
+				} else {
+					htmlRow = String.format("<li><a href=\"%s\">%s</a> (<a href=\"%s\">Phab</a>) %s<br/></li>",
+							StringUtils.escapeForHtml(commitUrl, false), shortId, phabricatorUrl, shortMessage);
+				}
 
 				html.append(htmlRow);
 			}
@@ -296,6 +304,15 @@ public class JabberReceiveHook extends ReceiveHook {
 
 		return null;
     }
+
+	private String getPhabricatorUrl(String repo, String revision) {
+		if (!runtimeManager.getSettings().getBoolean(Plugin.SETTING_LINK_PHABRICATOR, false)) {
+			return null;
+		}
+		return runtimeManager.getSettings().getString(Plugin.SETTING_PHABRICATOR_URL, "http://phabricator.local") + "/r" +
+				runtimeManager.getSettings().getString(String.format(Plugin.SETTING_PHABRICATOR_CALLSIGN, repo), "") +
+				revision;
+	}
 
     private List<RevCommit> getCommits(GitblitReceivePack receivePack, String baseId, String tipId) {
     	List<RevCommit> list = new ArrayList<>();
