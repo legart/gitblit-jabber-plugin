@@ -13,13 +13,18 @@ directory.
 
 ### Setup
 
-At a bare minimum you'll need two settings configured in `gitblit.properties`.
+At a bare minimum you'll need these settings configured in `gitblit.properties`:
 
     jabber.domain = jabber.org
     jabber.username = gitblit
     jabber.password = gitblitXXX
     jabber.defaultRoom = room@server.tld
 
+`jabber.domain` does a DNS SRV record lookup to find the actual host / port setting. If you do not have such a record, you can also specify host and port separately, like this:
+
+	jabber.host = my.host
+	jabber.port = 5222
+	
 There a handful of additional optional settings:
 
     jabber.nickname = Gitblit
@@ -29,11 +34,22 @@ There a handful of additional optional settings:
     jabber.postTags = true
     jabber.useProjectRooms = false
     jabber.projectRoom.<my repositoryname> = room@server.tld
+    jabber.linkToPhabricator = true
+    jabber.phabricatorUrl = http://your.phabricator.setup
+    jabber.phabricatorCallsign.<my repositoryname> = MYREPONAME
 
 #### jabber.useProjectRooms
 
 *jabber.useProjectRooms* allows you to have the plugin send messages to different
 rooms based on repository name.
+
+#### jabber.linkToPhabricator
+
+If you have a Phabricator setup which you use for code review, you can enable this 
+option to place a small link beside each commit ID to a Phabricator revision.
+Be aware that these links can only be seen by users that can receive XHTML-formatted
+Jabber messages, since adding an additional text link to the existing plain text 
+would make the output too chatty.
 
 ### Usage
 

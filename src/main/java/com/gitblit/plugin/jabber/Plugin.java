@@ -30,6 +30,12 @@ public class Plugin extends GitblitPlugin {
 
 	public static final String SETTING_PROJECT_ROOM = "jabber.projectRoom.%s";
 
+	public static final String SETTING_LINK_PHABRICATOR = "jabber.linkToPhabricator";
+
+	public static final String SETTING_PHABRICATOR_URL = "jabber.phabricatorUrl";
+
+	public static final String SETTING_PHABRICATOR_CALLSIGN = "jabber.phabricatorCallsign.%s";
+
 	public static final String SETTING_POST_PERSONAL_REPOS = "jabber.postPersonalRepos";
 
 	public static final String SETTING_POST_TICKETS = "jabber.postTickets";
@@ -39,6 +45,10 @@ public class Plugin extends GitblitPlugin {
 	public static final String SETTING_POST_BRANCHES = "jabber.postBranches";
 
 	public static final String SETTING_DOMAIN = "jabber.domain";
+
+	public static final String SETTING_HOST = "jabber.host";
+
+	public static final String SETTING_PORT = "jabber.port";
 
 	public static final String SETTING_ACCEPT_ALL_CERTS = "jabber.acceptAllCerts";
 

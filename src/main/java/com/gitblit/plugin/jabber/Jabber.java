@@ -77,8 +77,27 @@ public class Jabber implements IManager {
 
 		try {
 
-			String domain = runtimeManager.getSettings().getString(Plugin.SETTING_DOMAIN, "jabber.org");
-			ConnectionConfiguration cfg = new ConnectionConfiguration(domain);
+			String domain = runtimeManager.getSettings().getString(Plugin.SETTING_DOMAIN, null);
+			String host = runtimeManager.getSettings().getString(Plugin.SETTING_HOST, null);
+				
+			ConnectionConfiguration cfg;
+			if (domain != null) {
+				cfg = new ConnectionConfiguration(domain);				
+			} else if (host != null) {				
+				int port = 5222;
+				String portString = runtimeManager.getSettings().getString(Plugin.SETTING_PORT, null);
+				if (portString != null) {
+					try {
+						port = Integer.parseInt(portString);
+					} catch (NumberFormatException e) {
+						log.warn("Ignoring invalid port " + portString);
+					}	
+				}				
+				cfg = new ConnectionConfiguration(host, port);
+			} else {
+				log.error("Need a valid " + Plugin.SETTING_DOMAIN + " or " + Plugin.SETTING_HOST + " configuration");
+				return this;
+			}
 
 			boolean acceptAllCerts = runtimeManager.getSettings().getBoolean(Plugin.SETTING_ACCEPT_ALL_CERTS, false);
 			if(acceptAllCerts) {
